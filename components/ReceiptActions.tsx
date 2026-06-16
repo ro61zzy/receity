@@ -18,7 +18,11 @@ import { finalizeReceipt } from "@/lib/finalize-receipt";
 import { openWhatsAppReceipt } from "@/lib/whatsapp";
 import { useReceiptStore } from "@/lib/store/receipt-store";
 
-export function ReceiptActions() {
+type ReceiptActionsProps = {
+  compact?: boolean;
+};
+
+export function ReceiptActions({ compact = false }: ReceiptActionsProps) {
   const receipt = useReceiptStore((state) => state.receipt);
   const business = useReceiptStore((state) => state.business);
   const newReceipt = useReceiptStore((state) => state.newReceipt);
@@ -82,7 +86,6 @@ export function ReceiptActions() {
       return;
     }
 
-    // Pre-open tab on desktop (same click) so popup blockers don't block wa.me
     const whatsAppWindow = isDesktopLikeDevice()
       ? window.open("about:blank", "_blank")
       : null;
@@ -118,6 +121,42 @@ export function ReceiptActions() {
     toast.success("New receipt created");
   };
 
+  if (compact) {
+    return (
+      <div className="grid grid-cols-2 gap-2">
+        <Button
+          onClick={handleWhatsApp}
+          disabled={isExporting}
+          className="h-11 border-green-600/30 bg-green-600 text-white hover:bg-green-700"
+        >
+          <MessageCircle className="mr-2 h-4 w-4" />
+          {isExporting ? "..." : "WhatsApp"}
+        </Button>
+        <Button
+          onClick={handleDownloadPdf}
+          disabled={isExporting}
+          variant="outline"
+          className="h-11"
+        >
+          <Download className="mr-2 h-4 w-4" />
+          PDF
+        </Button>
+        <Button
+          variant="outline"
+          onClick={handlePrint}
+          className="h-11"
+        >
+          <Printer className="mr-2 h-4 w-4" />
+          Print
+        </Button>
+        <Button variant="secondary" onClick={handleNewReceipt} className="h-11">
+          <Plus className="mr-2 h-4 w-4" />
+          New
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <Card className="shadow-sm">
       <CardHeader>
@@ -131,12 +170,16 @@ export function ReceiptActions() {
           <Button
             onClick={handleDownloadPdf}
             disabled={isExporting}
-            className="flex-1"
+            className="h-11 flex-1"
           >
             <Download className="mr-2 h-4 w-4" />
             {isExporting ? "Generating..." : "Download PDF"}
           </Button>
-          <Button variant="outline" onClick={handlePrint} className="flex-1">
+          <Button
+            variant="outline"
+            onClick={handlePrint}
+            className="h-11 flex-1"
+          >
             <Printer className="mr-2 h-4 w-4" />
             Print Receipt
           </Button>
@@ -146,12 +189,16 @@ export function ReceiptActions() {
             variant="outline"
             onClick={handleWhatsApp}
             disabled={isExporting}
-            className="flex-1 border-green-600/30 text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-950/30"
+            className="h-11 flex-1 border-green-600/30 text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-950/30"
           >
             <MessageCircle className="mr-2 h-4 w-4" />
             {isExporting ? "Preparing..." : "Send via WhatsApp"}
           </Button>
-          <Button variant="secondary" onClick={handleNewReceipt} className="flex-1">
+          <Button
+            variant="secondary"
+            onClick={handleNewReceipt}
+            className="h-11 flex-1"
+          >
             <Plus className="mr-2 h-4 w-4" />
             New Receipt
           </Button>

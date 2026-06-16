@@ -15,10 +15,10 @@ export function AppHeader() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-3">
+    <>
+      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-3 sm:px-6">
+          <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <ReceiptText className="h-4 w-4" />
             </div>
@@ -27,7 +27,7 @@ export function AppHeader() {
             </span>
           </Link>
 
-          <nav className="flex items-center gap-1">
+          <nav className="hidden items-center gap-1 md:flex">
             {NAV.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
@@ -40,14 +40,34 @@ export function AppHeader() {
                 )}
               >
                 <Icon className="h-4 w-4" />
-                <span className="hidden sm:inline">{label}</span>
+                {label}
               </Link>
             ))}
           </nav>
-        </div>
 
-        <ThemeToggle />
-      </div>
-    </header>
+          <ThemeToggle />
+        </div>
+      </header>
+
+      <nav className="fixed inset-x-0 bottom-0 z-50 border-t bg-background/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom,0px)] md:hidden">
+        <div className="mx-auto grid max-w-7xl grid-cols-2">
+          {NAV.map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                "flex h-14 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors",
+                pathname === href
+                  ? "text-primary"
+                  : "text-muted-foreground",
+              )}
+            >
+              <Icon className="h-5 w-5" />
+              {label}
+            </Link>
+          ))}
+        </div>
+      </nav>
+    </>
   );
 }

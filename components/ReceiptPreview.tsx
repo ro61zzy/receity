@@ -4,7 +4,6 @@ import { formatCurrency } from "@/lib/currency";
 import { calculateItemTotal } from "@/lib/receipt-calculations";
 import { formatSocialHandle } from "@/lib/receipt-print-styles";
 import { RECEIPT_THEME } from "@/lib/receipt-theme";
-import { BUSINESS_SLOGAN } from "@/lib/constants";
 import { useReceiptStore, useReceiptTotals } from "@/lib/store/receipt-store";
 import {
   InstagramIcon,
@@ -589,6 +588,7 @@ export function ReceiptPreview() {
           Thank you for shopping with us
         </p>
 
+        {business.slogan.trim() && (
         <p
           style={{
             textAlign: "center",
@@ -602,9 +602,11 @@ export function ReceiptPreview() {
             paddingRight: 8,
           }}
         >
-          {BUSINESS_SLOGAN}
+          {business.slogan.trim()}
         </p>
+        )}
 
+        {(business.whatsapp || business.tiktok || business.instagram) && (
         <div
           style={{
             display: "flex",
@@ -639,6 +641,7 @@ export function ReceiptPreview() {
             )}
           </div>
         </div>
+        )}
 
         <div
           style={{

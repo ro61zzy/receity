@@ -3,6 +3,7 @@ export const STORAGE_KEYS = {
   receiptCounter: "receity-receipt-counter",
   savedReceipts: "receity-saved-receipts",
   inventory: "receity-inventory",
+  setupNotice: "receity-setup-notice",
 } as const;
 
 export const CURRENCY = {
@@ -11,7 +12,3 @@ export const CURRENCY = {
 } as const;
 
 export const RECEIPT_PREFIX = "RC";
-
-export const BUSINESS_SLOGAN = "Random things you'll actually need ✨";
-
-export { DEFAULT_SOCIAL } from "./receipt-theme";

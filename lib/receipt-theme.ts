@@ -12,8 +12,3 @@ export const RECEIPT_THEME = {
   gridLine: "#b8cfe0",
   tableHeader: "#1e4d7b",
 } as const;
-
-export const DEFAULT_SOCIAL = {
-  tiktok: "https://www.tiktok.com/@random_convenience",
-  instagram: "https://www.instagram.com/random_convenience",
-} as const;

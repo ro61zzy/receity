@@ -34,7 +34,7 @@ export function InventoryTable() {
   const products = useInventoryStore((state) => state.products);
   const updateProduct = useInventoryStore((state) => state.updateProduct);
   const addProduct = useInventoryStore((state) => state.addProduct);
-  const resetToSeed = useInventoryStore((state) => state.resetToSeed);
+  const clearProducts = useInventoryStore((state) => state.clearProducts);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [newProduct, setNewProduct] = useState({
@@ -82,24 +82,46 @@ export function InventoryTable() {
           <Button
             variant="outline"
             size="sm"
+            className="h-10"
             onClick={() => setShowAddForm(!showAddForm)}
           >
             <Plus className="mr-1 h-4 w-4" />
             Add Product
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              resetToSeed();
-              toast.success("Inventory reset to defaults");
-            }}
-          >
-            <RotateCcw className="mr-1 h-4 w-4" />
-            Reset
-          </Button>
+          {products.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-10"
+              onClick={() => {
+                clearProducts();
+                toast.success("Inventory cleared");
+              }}
+            >
+              <RotateCcw className="mr-1 h-4 w-4" />
+              Clear
+            </Button>
+          )}
         </div>
       </div>
+
+      {products.length === 0 && !showAddForm && (
+        <Card className="shadow-sm">
+          <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
+            <Package className="h-10 w-10 text-muted-foreground" />
+            <div>
+              <p className="font-medium">No products yet</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Add your own products to pick them quickly on receipts.
+              </p>
+            </div>
+            <Button onClick={() => setShowAddForm(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add your first product
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {showAddForm && (
         <Card className="shadow-sm">
@@ -196,7 +218,7 @@ export function InventoryTable() {
               Stock updates automatically when you complete a receipt
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>

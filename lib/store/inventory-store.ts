@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { applyFramePrices, createDefaultMagneticFrameInventory } from "@/lib/inventory-seed";
+import { applyFramePrices } from "@/lib/inventory-seed";
 import { STORAGE_KEYS } from "@/lib/constants";
 import type { Product } from "@/types/inventory";
 
@@ -16,13 +16,13 @@ interface InventoryStore {
   removeProduct: (id: string) => void;
   markReceiptDeducted: (receiptNumber: string) => void;
   isReceiptDeducted: (receiptNumber: string) => boolean;
-  resetToSeed: () => void;
+  clearProducts: () => void;
 }
 
 export const useInventoryStore = create<InventoryStore>()(
   persist(
     (set, get) => ({
-      products: createDefaultMagneticFrameInventory(),
+      products: [],
       deductedReceiptNumbers: [],
 
       setProducts: (products) => set({ products }),
@@ -59,10 +59,7 @@ export const useInventoryStore = create<InventoryStore>()(
       isReceiptDeducted: (receiptNumber) =>
         get().deductedReceiptNumbers.includes(receiptNumber),
 
-      resetToSeed: () =>
-        set({
-          products: createDefaultMagneticFrameInventory(),
-        }),
+      clearProducts: () => set({ products: [] }),
     }),
     {
       name: STORAGE_KEYS.inventory,

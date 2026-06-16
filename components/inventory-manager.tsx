@@ -2,18 +2,22 @@
 
 import { AppHeader } from "@/components/app-header";
 import { InventoryTable } from "@/components/InventoryTable";
+import { SetupNotice } from "@/components/setup-notice";
 
 export function InventoryManager() {
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-muted/30 pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
       <AppHeader />
+      <SetupNotice />
 
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold tracking-tight">Inventory</h2>
-          <p className="mt-1 text-muted-foreground">
-            Track stock by size and color. When you complete a receipt, linked
-            items deduct automatically.
+      <main className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
+            Inventory
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground sm:text-base">
+            Add your products here. Stock deducts automatically when you
+            complete a receipt.
           </p>
         </div>
 

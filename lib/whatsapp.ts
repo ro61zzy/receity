@@ -1,5 +1,4 @@
 import { isMobileDevice } from "@/lib/device";
-import { BUSINESS_SLOGAN } from "@/lib/constants";
 import { formatCurrency } from "@/lib/currency";
 import { calculateItemTotal, calculateTotals } from "@/lib/receipt-calculations";
 import type { BusinessInfo } from "@/types/receipt";
@@ -48,8 +47,7 @@ export function formatReceiptWhatsAppMessage(
     "",
     `Total: ${formatCurrency(total)}`,
     "",
-    BUSINESS_SLOGAN,
-    "",
+    ...(business.slogan.trim() ? [business.slogan.trim(), ""] : []),
     business.name || "Receity",
   ].join("\n");
 }

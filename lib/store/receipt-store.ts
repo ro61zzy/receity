@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { formatReceiptNumber, getNextReceiptNumber, getReceiptYear } from "@/lib/receipt-number";
 import { calculateTotals } from "@/lib/receipt-calculations";
-import { DEFAULT_SOCIAL, STORAGE_KEYS } from "@/lib/constants";
+import { STORAGE_KEYS } from "@/lib/constants";
 import type {
   BusinessInfo,
   ReceiptDetails,
@@ -34,8 +34,9 @@ function normalizeBusiness(
     phone: business?.phone ?? "",
     whatsapp: business?.whatsapp ?? "",
     address: business?.address ?? "",
-    tiktok: business?.tiktok ?? DEFAULT_SOCIAL.tiktok,
-    instagram: business?.instagram ?? DEFAULT_SOCIAL.instagram,
+    tiktok: business?.tiktok ?? "",
+    instagram: business?.instagram ?? "",
+    slogan: business?.slogan ?? "",
   };
 }
 

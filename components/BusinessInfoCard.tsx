@@ -49,7 +49,8 @@ export function BusinessInfoCard() {
           <CardTitle className="text-base">Business Information</CardTitle>
         </div>
         <CardDescription>
-          Your business details appear on every receipt
+          Your details save on this device only — each person sets up their own
+          shop
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -142,6 +143,16 @@ export function BusinessInfoCard() {
               onChange={(e) => setBusiness({ instagram: e.target.value })}
             />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="business-slogan">Tagline / Slogan</Label>
+          <Input
+            id="business-slogan"
+            placeholder="Optional line on your receipt footer"
+            value={business.slogan}
+            onChange={(e) => setBusiness({ slogan: e.target.value })}
+          />
         </div>
 
         <div className="space-y-2">

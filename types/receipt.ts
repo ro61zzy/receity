@@ -6,6 +6,7 @@ export interface BusinessInfo {
   address: string;
   tiktok: string;
   instagram: string;
+  slogan: string;
 }
 
 export interface ReceiptItem {
