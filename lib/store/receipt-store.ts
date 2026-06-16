@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { formatReceiptNumber, getNextReceiptNumber, getReceiptYear } from "@/lib/receipt-number";
 import { calculateTotals } from "@/lib/receipt-calculations";
+import { stripLegacyBusinessDefaults } from "@/lib/business-migration";
 import { STORAGE_KEYS } from "@/lib/constants";
 import type {
   BusinessInfo,
@@ -170,6 +171,17 @@ export const useReceiptStore = create<ReceiptStore>()(
     }),
     {
       name: STORAGE_KEYS.business,
+      version: 2,
+      migrate: (persistedState, version) => {
+        if (version < 2) {
+          const state = persistedState as Partial<ReceiptStore>;
+          return {
+            ...state,
+            business: stripLegacyBusinessDefaults(state.business),
+          };
+        }
+        return persistedState;
+      },
       partialize: (state) => ({
         business: state.business,
         receiptCounter: state.receiptCounter,
