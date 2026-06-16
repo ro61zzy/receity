@@ -30,7 +30,7 @@ export function getReceiptPrintStyles(): string {
     }
 
     @media print {
-      body { padding: 0; background: white; }
+      body { padding: 0; background: ${RECEIPT_THEME.paper}; }
     }
   `;
 }

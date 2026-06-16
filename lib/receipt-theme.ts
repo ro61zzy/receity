@@ -17,5 +17,3 @@ export const DEFAULT_SOCIAL = {
   tiktok: "https://www.tiktok.com/@random_convenience",
   instagram: "https://www.instagram.com/random_convenience",
 } as const;
-
-export const MIN_RECEIPT_ROWS = 8;

@@ -1,6 +1,7 @@
 "use client";
 
-import { User } from "lucide-react";
+import { Copy, User } from "lucide-react";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -11,9 +12,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Copy } from "lucide-react";
-import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { useReceiptStore } from "@/lib/store/receipt-store";
+import { PAYMENT_METHODS, type PaymentMethod } from "@/types/receipt";
 
 export function CustomerInfoCard() {
   const receipt = useReceiptStore((state) => state.receipt);
@@ -85,6 +86,27 @@ export function CustomerInfoCard() {
               onChange={(e) => setReceipt({ customerPhone: e.target.value })}
             />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="payment-method">Payment Method</Label>
+          <select
+            id="payment-method"
+            value={receipt.paymentMethod}
+            onChange={(e) =>
+              setReceipt({ paymentMethod: e.target.value as PaymentMethod })
+            }
+            className={cn(
+              "border-input bg-background h-8 w-full rounded-lg border px-2.5 text-sm",
+              "focus-visible:border-ring focus-visible:ring-ring/50 outline-none focus-visible:ring-3",
+            )}
+          >
+            {PAYMENT_METHODS.map((method) => (
+              <option key={method} value={method}>
+                {method}
+              </option>
+            ))}
+          </select>
         </div>
       </CardContent>
     </Card>

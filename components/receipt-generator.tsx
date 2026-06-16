@@ -34,12 +34,10 @@ export function ReceiptGenerator() {
           </div>
 
           <div className="lg:sticky lg:top-20 lg:self-start">
-            <div className="rounded-xl border bg-[#e5e0d8] p-4 shadow-sm sm:p-8">
-              <p className="mb-4 text-sm font-medium text-[#4a5568]">
-                Live Preview — receipt book style
-              </p>
-              <ReceiptPreview />
-            </div>
+            <p className="mb-4 text-sm font-medium text-muted-foreground">
+              Live Preview
+            </p>
+            <ReceiptPreview />
           </div>
         </div>
       </main>

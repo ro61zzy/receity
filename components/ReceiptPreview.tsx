@@ -3,8 +3,16 @@
 import { formatCurrency } from "@/lib/currency";
 import { calculateItemTotal } from "@/lib/receipt-calculations";
 import { formatSocialHandle } from "@/lib/receipt-print-styles";
-import { MIN_RECEIPT_ROWS, RECEIPT_THEME } from "@/lib/receipt-theme";
+import { RECEIPT_THEME } from "@/lib/receipt-theme";
+import { BUSINESS_SLOGAN } from "@/lib/constants";
 import { useReceiptStore, useReceiptTotals } from "@/lib/store/receipt-store";
+import {
+  InstagramIcon,
+  LocationIcon,
+  PhoneIcon,
+  TikTokIcon,
+  WhatsAppIcon,
+} from "@/components/receipt-social-icons";
 
 function formatDisplayDate(dateStr: string): string {
   if (!dateStr) return "—";
@@ -13,6 +21,101 @@ function formatDisplayDate(dateStr: string): string {
     month: "short",
     year: "numeric",
   });
+}
+
+function HeaderInfoLine({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 6,
+        marginTop: 4,
+        fontSize: 8.5,
+        color: RECEIPT_THEME.inkMuted,
+        lineHeight: 1.4,
+      }}
+    >
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: 11,
+          height: 11,
+          flexShrink: 0,
+          marginTop: 1,
+        }}
+      >
+        {icon}
+      </span>
+      <span style={{ wordBreak: "break-word", overflowWrap: "anywhere", flex: 1 }}>
+        <strong style={{ color: RECEIPT_THEME.blue, fontWeight: 700 }}>
+          {label}:
+        </strong>{" "}
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function FooterSocialLine({
+  icon,
+  text,
+}: {
+  icon: React.ReactNode;
+  text: string;
+}) {
+  return (
+    <div
+      className="receipt-social-row"
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        height: 16,
+        gap: 8,
+      }}
+    >
+      <div
+        className="receipt-social-icon"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: 14,
+          height: 14,
+          lineHeight: 0,
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </div>
+      <span
+        className="receipt-social-text"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          height: 14,
+          fontFamily: "var(--font-receipt-mono), monospace",
+          fontSize: 9,
+          color: RECEIPT_THEME.inkMuted,
+          lineHeight: 1,
+        }}
+      >
+        {text}
+      </span>
+    </div>
+  );
 }
 
 function FieldRow({
@@ -63,7 +166,8 @@ export function ReceiptPreview() {
   const { subtotal, total } = useReceiptTotals();
 
   const validItems = receipt.items.filter((item) => item.name.trim());
-  const emptyRowCount = Math.max(0, MIN_RECEIPT_ROWS - validItems.length);
+  const emptyRowCount =
+    validItems.length === 0 ? 2 : validItems.length === 1 ? 1 : 0;
 
   const paperStyle: React.CSSProperties = {
     fontFamily: "var(--font-receipt-serif), Georgia, serif",
@@ -71,14 +175,7 @@ export function ReceiptPreview() {
     backgroundColor: RECEIPT_THEME.paper,
     backgroundImage: `
       radial-gradient(ellipse at 20% 0%, rgba(255,255,255,0.55) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 100%, rgba(200,180,150,0.12) 0%, transparent 50%),
-      repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 27px,
-        rgba(142, 180, 212, 0.07) 27px,
-        rgba(142, 180, 212, 0.07) 28px
-      )
+      radial-gradient(ellipse at 80% 100%, rgba(200,180,150,0.12) 0%, transparent 50%)
     `,
     border: `2px solid ${RECEIPT_THEME.blue}`,
     boxShadow: `
@@ -87,10 +184,11 @@ export function ReceiptPreview() {
       0 4px 20px rgba(30, 77, 123, 0.12)
     `,
     padding: "20px 22px 24px",
-    maxWidth: 400,
-    width: "100%",
+    width: 400,
+    maxWidth: "100%",
     margin: "0 auto",
     position: "relative",
+    boxSizing: "border-box",
   };
 
   return (
@@ -112,7 +210,7 @@ export function ReceiptPreview() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "flex-start",
-          gap: 12,
+          gap: 10,
           marginBottom: 14,
           paddingTop: 4,
         }}
@@ -133,35 +231,34 @@ export function ReceiptPreview() {
               }}
             />
           )}
-          <div style={{ minWidth: 0 }}>
+          <div style={{ minWidth: 0, flex: 1 }}>
             <div
               style={{
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: 700,
                 color: RECEIPT_THEME.blue,
-                lineHeight: 1.25,
+                lineHeight: 1.3,
                 textTransform: "uppercase",
-                letterSpacing: "0.02em",
+                letterSpacing: "0.01em",
+                whiteSpace: "nowrap",
+                paddingRight: 4,
               }}
             >
               {business.name || "Your Business Name"}
             </div>
             {business.address && (
-              <div
-                style={{
-                  fontSize: 9,
-                  color: RECEIPT_THEME.inkMuted,
-                  marginTop: 3,
-                  lineHeight: 1.4,
-                }}
-              >
-                {business.address}
-              </div>
+              <HeaderInfoLine
+                icon={<LocationIcon />}
+                label="Location"
+                value={business.address}
+              />
             )}
             {business.phone && (
-              <div style={{ fontSize: 9, color: RECEIPT_THEME.inkMuted, marginTop: 2 }}>
-                Tel: {business.phone}
-              </div>
+              <HeaderInfoLine
+                icon={<PhoneIcon />}
+                label="Tel"
+                value={business.phone}
+              />
             )}
           </div>
         </div>
@@ -173,6 +270,7 @@ export function ReceiptPreview() {
             padding: "4px 8px",
             textAlign: "center",
             flexShrink: 0,
+            minWidth: 88,
           }}
         >
           <div
@@ -189,10 +287,11 @@ export function ReceiptPreview() {
           <div
             style={{
               fontFamily: "var(--font-receipt-mono), monospace",
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: 600,
               color: RECEIPT_THEME.red,
               marginTop: 2,
+              letterSpacing: "-0.02em",
             }}
           >
             {receipt.receiptNumber}
@@ -235,6 +334,9 @@ export function ReceiptPreview() {
         <FieldRow label="Date" value={formatDisplayDate(receipt.date)} />
         <FieldRow label="Phone" value={receipt.customerPhone} />
         <FieldRow label="Issued" value={formatDisplayDate(receipt.date)} />
+        <div style={{ gridColumn: "1 / -1" }}>
+          <FieldRow label="Payment Method" value={receipt.paymentMethod} />
+        </div>
       </div>
 
       {/* Star divider */}
@@ -259,16 +361,24 @@ export function ReceiptPreview() {
           borderCollapse: "collapse",
           fontSize: 10,
           marginBottom: 12,
+          tableLayout: "fixed",
         }}
       >
+        <colgroup>
+          <col style={{ width: "8%" }} />
+          <col style={{ width: "42%" }} />
+          <col style={{ width: "10%" }} />
+          <col style={{ width: "20%" }} />
+          <col style={{ width: "20%" }} />
+        </colgroup>
         <thead>
           <tr style={{ background: RECEIPT_THEME.tableHeader, color: "#fff" }}>
             <th
               style={{
-                padding: "5px 6px",
+                padding: "6px 4px",
                 textAlign: "center",
                 fontWeight: 700,
-                width: 32,
+                fontSize: 9,
                 borderRight: `1px solid ${RECEIPT_THEME.blueLight}`,
               }}
             >
@@ -276,20 +386,21 @@ export function ReceiptPreview() {
             </th>
             <th
               style={{
-                padding: "5px 8px",
+                padding: "6px 6px",
                 textAlign: "left",
                 fontWeight: 700,
+                fontSize: 9,
                 borderRight: `1px solid ${RECEIPT_THEME.blueLight}`,
               }}
             >
-              Item / Description
+              Item
             </th>
             <th
               style={{
-                padding: "5px 6px",
+                padding: "6px 4px",
                 textAlign: "center",
                 fontWeight: 700,
-                width: 36,
+                fontSize: 9,
                 borderRight: `1px solid ${RECEIPT_THEME.blueLight}`,
               }}
             >
@@ -297,10 +408,10 @@ export function ReceiptPreview() {
             </th>
             <th
               style={{
-                padding: "5px 6px",
+                padding: "6px 4px",
                 textAlign: "right",
                 fontWeight: 700,
-                width: 58,
+                fontSize: 9,
                 borderRight: `1px solid ${RECEIPT_THEME.blueLight}`,
               }}
             >
@@ -308,13 +419,13 @@ export function ReceiptPreview() {
             </th>
             <th
               style={{
-                padding: "5px 6px",
+                padding: "6px 4px",
                 textAlign: "right",
                 fontWeight: 700,
-                width: 62,
+                fontSize: 9,
               }}
             >
-              Amount
+              Amt
             </th>
           </tr>
         </thead>
@@ -335,9 +446,11 @@ export function ReceiptPreview() {
               </td>
               <td
                 style={{
-                  padding: "7px 8px",
+                  padding: "7px 6px",
                   borderBottom: `1px solid ${RECEIPT_THEME.gridLine}`,
                   borderRight: `1px solid ${RECEIPT_THEME.gridLine}`,
+                  wordBreak: "break-word",
+                  lineHeight: 1.35,
                 }}
               >
                 {item.name}
@@ -470,50 +583,61 @@ export function ReceiptPreview() {
             fontSize: 11,
             fontStyle: "italic",
             color: RECEIPT_THEME.ink,
-            marginBottom: 10,
+            marginBottom: 6,
           }}
         >
           Thank you for shopping with us
         </p>
 
-        <div
+        <p
           style={{
-            fontSize: 9,
-            color: RECEIPT_THEME.inkMuted,
-            lineHeight: 1.7,
             textAlign: "center",
+            fontSize: 7.5,
+            fontStyle: "italic",
+            color: RECEIPT_THEME.blueLine,
+            marginBottom: 12,
+            lineHeight: 1.3,
+            whiteSpace: "nowrap",
+            paddingLeft: 8,
+            paddingRight: 8,
           }}
         >
-          {business.whatsapp && (
-            <div>
-              <strong style={{ color: RECEIPT_THEME.blue }}>WhatsApp:</strong>{" "}
-              {business.whatsapp}
-            </div>
-          )}
-          {business.phone && (
-            <div>
-              <strong style={{ color: RECEIPT_THEME.blue }}>Phone:</strong>{" "}
-              {business.phone}
-            </div>
-          )}
-          {business.tiktok && (
-            <div>
-              <strong style={{ color: RECEIPT_THEME.blue }}>TikTok:</strong>{" "}
-              {formatSocialHandle(business.tiktok)}
-            </div>
-          )}
-          {business.instagram && (
-            <div>
-              <strong style={{ color: RECEIPT_THEME.blue }}>Instagram:</strong>{" "}
-              {formatSocialHandle(business.instagram)}
-            </div>
-          )}
-          {business.address && (
-            <div>
-              <strong style={{ color: RECEIPT_THEME.blue }}>Location:</strong>{" "}
-              {business.address}
-            </div>
-          )}
+          {BUSINESS_SLOGAN}
+        </p>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: 12,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 7,
+            }}
+          >
+            {business.whatsapp && (
+              <FooterSocialLine
+                icon={<WhatsAppIcon size={12} />}
+                text={business.whatsapp}
+              />
+            )}
+            {business.tiktok && (
+              <FooterSocialLine
+                icon={<TikTokIcon size={12} />}
+                text={formatSocialHandle(business.tiktok)}
+              />
+            )}
+            {business.instagram && (
+              <FooterSocialLine
+                icon={<InstagramIcon size={12} />}
+                text={formatSocialHandle(business.instagram)}
+              />
+            )}
+          </div>
         </div>
 
         <div

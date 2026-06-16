@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { formatReceiptNumber, getNextReceiptNumber } from "@/lib/receipt-number";
+import { formatReceiptNumber, getNextReceiptNumber, getReceiptYear } from "@/lib/receipt-number";
 import { calculateTotals } from "@/lib/receipt-calculations";
 import { DEFAULT_SOCIAL, STORAGE_KEYS } from "@/lib/constants";
 import type {
@@ -39,20 +39,34 @@ function normalizeBusiness(
   };
 }
 
-function createInitialReceipt(counter: number): ReceiptDetails {
-  const { number } = getNextReceiptNumber(counter);
+function createInitialReceipt(counter: number, year?: number): ReceiptDetails {
+  const receiptYear = year ?? getReceiptYear();
+  const { number } = getNextReceiptNumber(counter, receiptYear);
   return {
     receiptNumber: number,
     date: getTodayDate(),
     customerName: "",
     customerPhone: "",
+    paymentMethod: "M-Pesa",
     items: [createEmptyItem()],
   };
+}
+
+function normalizeReceiptCounter(
+  counter: number,
+  storedYear: number | undefined,
+): { counter: number; year: number } {
+  const currentYear = getReceiptYear();
+  if (storedYear !== currentYear) {
+    return { counter: 0, year: currentYear };
+  }
+  return { counter, year: currentYear };
 }
 
 interface ReceiptStore {
   business: BusinessInfo;
   receiptCounter: number;
+  receiptCounterYear: number;
   receipt: ReceiptDetails;
   savedReceipts: SavedReceipt[];
 
@@ -71,6 +85,7 @@ export const useReceiptStore = create<ReceiptStore>()(
     (set, get) => ({
       business: normalizeBusiness(undefined),
       receiptCounter: 0,
+      receiptCounterYear: getReceiptYear(),
       receipt: createInitialReceipt(0),
       savedReceipts: [],
 
@@ -119,11 +134,16 @@ export const useReceiptStore = create<ReceiptStore>()(
         })),
 
       newReceipt: () => {
-        const { receiptCounter } = get();
+        const { receiptCounter, receiptCounterYear } = get();
+        const { year } = normalizeReceiptCounter(
+          receiptCounter,
+          receiptCounterYear,
+        );
         const newCounter = receiptCounter + 1;
         set({
           receiptCounter: newCounter,
-          receipt: createInitialReceipt(newCounter),
+          receiptCounterYear: year,
+          receipt: createInitialReceipt(newCounter, year),
         });
       },
 
@@ -152,17 +172,31 @@ export const useReceiptStore = create<ReceiptStore>()(
       partialize: (state) => ({
         business: state.business,
         receiptCounter: state.receiptCounter,
+        receiptCounterYear: state.receiptCounterYear,
         savedReceipts: state.savedReceipts,
       }),
       merge: (persisted, current) => {
         const persistedState = persisted as Partial<ReceiptStore> | undefined;
-        const counter = persistedState?.receiptCounter ?? 0;
+        const { counter, year } = normalizeReceiptCounter(
+          persistedState?.receiptCounter ?? 0,
+          persistedState?.receiptCounterYear,
+        );
+        const receipt = createInitialReceipt(counter, year);
+        const persistedReceipt = persistedState?.receipt as
+          | Partial<ReceiptDetails>
+          | undefined;
+
         return {
           ...current,
           business: normalizeBusiness(persistedState?.business),
           receiptCounter: counter,
+          receiptCounterYear: year,
           savedReceipts: persistedState?.savedReceipts ?? [],
-          receipt: createInitialReceipt(counter),
+          receipt: {
+            ...receipt,
+            paymentMethod:
+              persistedReceipt?.paymentMethod ?? receipt.paymentMethod,
+          },
         };
       },
     },

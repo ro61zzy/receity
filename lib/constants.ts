@@ -11,4 +11,6 @@ export const CURRENCY = {
 
 export const RECEIPT_PREFIX = "RC";
 
+export const BUSINESS_SLOGAN = "Random things you'll actually need ✨";
+
 export { DEFAULT_SOCIAL } from "./receipt-theme";

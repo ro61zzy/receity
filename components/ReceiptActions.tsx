@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { downloadReceiptPdf, printReceipt } from "@/lib/pdf";
+import { getReceiptPdfFilename } from "@/lib/receipt-filename";
 import { useReceiptStore } from "@/lib/store/receipt-store";
 
 export function ReceiptActions() {
@@ -29,11 +30,18 @@ export function ReceiptActions() {
 
     setIsExporting(true);
     try {
-      await downloadReceiptPdf(element, `${receipt.receiptNumber}.pdf`);
+      const filename = getReceiptPdfFilename(
+        receipt.customerName,
+        receipt.receiptNumber,
+      );
+      await downloadReceiptPdf(element, filename);
       saveCurrentReceipt();
       toast.success("PDF downloaded successfully");
-    } catch {
-      toast.error("Failed to generate PDF");
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to generate PDF",
+      );
     } finally {
       setIsExporting(false);
     }
@@ -46,9 +54,16 @@ export function ReceiptActions() {
       return;
     }
 
-    printReceipt(element);
-    saveCurrentReceipt();
-    toast.success("Print dialog opened");
+    try {
+      printReceipt(element);
+      saveCurrentReceipt();
+      toast.success("Print dialog opened");
+    } catch (error) {
+      console.error("Print failed:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to open print dialog",
+      );
+    }
   };
 
   const handleNewReceipt = () => {

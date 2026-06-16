@@ -15,11 +15,21 @@ export interface ReceiptItem {
   unitPrice: number;
 }
 
+export type PaymentMethod = "M-Pesa" | "Cash" | "Bank Transfer" | "Card";
+
+export const PAYMENT_METHODS: PaymentMethod[] = [
+  "M-Pesa",
+  "Cash",
+  "Bank Transfer",
+  "Card",
+];
+
 export interface ReceiptDetails {
   receiptNumber: string;
   date: string;
   customerName: string;
   customerPhone: string;
+  paymentMethod: PaymentMethod;
   items: ReceiptItem[];
 }
 
