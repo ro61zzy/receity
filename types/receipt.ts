@@ -13,6 +13,7 @@ export interface ReceiptItem {
   name: string;
   quantity: number;
   unitPrice: number;
+  productId?: string;
 }
 
 export type PaymentMethod = "M-Pesa" | "Cash" | "Bank Transfer" | "Card";
@@ -38,6 +39,7 @@ export interface SavedReceipt extends ReceiptDetails {
   createdAt: string;
   subtotal: number;
   total: number;
+  stockDeducted?: boolean;
 }
 
 export interface ReceiptTotals {

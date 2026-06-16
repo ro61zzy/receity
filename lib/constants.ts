@@ -2,6 +2,7 @@ export const STORAGE_KEYS = {
   business: "receity-business",
   receiptCounter: "receity-receipt-counter",
   savedReceipts: "receity-saved-receipts",
+  inventory: "receity-inventory",
 } as const;
 
 export const CURRENCY = {
