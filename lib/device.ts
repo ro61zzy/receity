@@ -5,7 +5,7 @@ export function isMobileDevice(): boolean {
   );
 }
 
-/** Mac, iOS Simulator, and iPad-on-Mac — share sheet won't include WhatsApp */
+/** Mac, iOS Simulator, and iPad-on-Mac */
 export function isDesktopLikeDevice(): boolean {
   if (typeof navigator === "undefined") return true;
 
@@ -13,7 +13,6 @@ export function isDesktopLikeDevice(): boolean {
 
   if (/Simulator/i.test(ua)) return true;
 
-  // Safari/iOS simulator on Mac reports iPhone/iPad with MacIntel platform
   if (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) {
     return true;
   }
@@ -27,17 +26,4 @@ export function isDesktopLikeDevice(): boolean {
 
 export function isRealMobileDevice(): boolean {
   return isMobileDevice() && !isDesktopLikeDevice();
-}
-
-/** Share sheet with PDF only on real phones — not Mac/desktop/simulator */
-export function canShareReceiptPdfOnMobile(): boolean {
-  if (!isRealMobileDevice()) return false;
-  if (typeof navigator === "undefined" || !navigator.canShare) return false;
-
-  try {
-    const testFile = new File(["test"], "test.pdf", { type: "application/pdf" });
-    return navigator.canShare({ files: [testFile] });
-  } catch {
-    return false;
-  }
 }

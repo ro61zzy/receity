@@ -1,3 +1,4 @@
+import { isMobileDevice } from "@/lib/device";
 import { BUSINESS_SLOGAN } from "@/lib/constants";
 import { formatCurrency } from "@/lib/currency";
 import { calculateItemTotal, calculateTotals } from "@/lib/receipt-calculations";
@@ -78,10 +79,16 @@ export function openWhatsAppReceipt(
   openWhatsAppUrl(url, targetWindow);
 }
 
-/** Open wa.me without losing the Receity tab (popup must be opened on click) */
+/** Open wa.me — mobile uses same-tab navigation; desktop uses pre-opened tab */
 export function openWhatsAppUrl(url: string, targetWindow?: Window | null): void {
   if (targetWindow && !targetWindow.closed) {
     targetWindow.location.href = url;
+    return;
+  }
+
+  // Same-tab navigation works after async work and opens the WhatsApp app on phones
+  if (isMobileDevice()) {
+    window.location.assign(url);
     return;
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Download, MessageCircle, Plus, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -11,19 +11,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { isRealMobileDevice } from "@/lib/device";
-import {
-  canShareReceiptPdfOnMobile,
-  downloadReceiptPdf,
-  printReceipt,
-  shareReceiptPdf,
-} from "@/lib/pdf";
+import { isDesktopLikeDevice } from "@/lib/device";
+import { downloadReceiptPdf, printReceipt } from "@/lib/pdf";
 import { getReceiptPdfFilename } from "@/lib/receipt-filename";
 import { finalizeReceipt } from "@/lib/finalize-receipt";
-import {
-  formatReceiptWhatsAppMessage,
-  openWhatsAppReceipt,
-} from "@/lib/whatsapp";
+import { openWhatsAppReceipt } from "@/lib/whatsapp";
 import { useReceiptStore } from "@/lib/store/receipt-store";
 
 export function ReceiptActions() {
@@ -31,11 +23,6 @@ export function ReceiptActions() {
   const business = useReceiptStore((state) => state.business);
   const newReceipt = useReceiptStore((state) => state.newReceipt);
   const [isExporting, setIsExporting] = useState(false);
-  const [mobileShare, setMobileShare] = useState(false);
-
-  useEffect(() => {
-    setMobileShare(canShareReceiptPdfOnMobile());
-  }, []);
 
   const handleDownloadPdf = async () => {
     const element = document.getElementById("receipt-preview");
@@ -95,10 +82,10 @@ export function ReceiptActions() {
       return;
     }
 
-    // Open tab now (same click) so popup blockers don't block wa.me after PDF gen
-    const whatsAppWindow = isRealMobileDevice()
-      ? null
-      : window.open("about:blank", "_blank");
+    // Pre-open tab on desktop (same click) so popup blockers don't block wa.me
+    const whatsAppWindow = isDesktopLikeDevice()
+      ? window.open("about:blank", "_blank")
+      : null;
 
     setIsExporting(true);
     try {
@@ -106,30 +93,13 @@ export function ReceiptActions() {
         receipt.customerName,
         receipt.receiptNumber,
       );
-      const message = formatReceiptWhatsAppMessage(receipt, business);
-
-      if (mobileShare && isRealMobileDevice()) {
-        try {
-          const shared = await shareReceiptPdf(element, filename, message);
-          if (shared) {
-            finalizeReceipt();
-            toast.success("Pick WhatsApp from the share menu");
-            whatsAppWindow?.close();
-            return;
-          }
-        } catch (error) {
-          if (error instanceof Error && error.name === "AbortError") {
-            whatsAppWindow?.close();
-            return;
-          }
-        }
-      }
 
       await downloadReceiptPdf(element, filename);
+      await new Promise((resolve) => setTimeout(resolve, 400));
       openWhatsAppReceipt(phone, receipt, business, whatsAppWindow);
       finalizeReceipt();
       toast.success(
-        "PDF downloaded and WhatsApp opened — attach the PDF, then send",
+        "WhatsApp opened — attach the downloaded PDF, then send",
       );
     } catch (error) {
       whatsAppWindow?.close();
@@ -187,9 +157,8 @@ export function ReceiptActions() {
           </Button>
         </div>
         <p className="text-xs text-muted-foreground">
-          {mobileShare
-            ? "Phone: share menu with PDF attached, or WhatsApp opens with receipt text."
-            : "Downloads PDF and opens WhatsApp to the customer. Attach the PDF in chat before sending."}
+          Downloads the PDF, then opens WhatsApp to the customer. Attach the PDF
+          in chat before sending.
         </p>
       </CardContent>
     </Card>

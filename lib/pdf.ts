@@ -1,6 +1,5 @@
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import { canShareReceiptPdfOnMobile } from "@/lib/device";
 import { getReceiptPrintStyles } from "@/lib/receipt-print-styles";
 import { RECEIPT_THEME } from "@/lib/receipt-theme";
 
@@ -226,33 +225,6 @@ export async function downloadReceiptPdf(
   link.download = filename;
   link.click();
   URL.revokeObjectURL(url);
-}
-
-export function canShareReceiptPdf(): boolean {
-  return canShareReceiptPdfOnMobile();
-}
-
-export { canShareReceiptPdfOnMobile } from "@/lib/device";
-
-/** Free on mobile — native share sheet can attach PDF to WhatsApp */
-export async function shareReceiptPdf(
-  element: HTMLElement,
-  filename: string,
-  message: string,
-): Promise<boolean> {
-  const blob = await buildReceiptPdfBlob(element);
-  const file = new File([blob], filename, { type: "application/pdf" });
-
-  if (!navigator.share || !navigator.canShare?.({ files: [file], text: message })) {
-    return false;
-  }
-
-  await navigator.share({
-    files: [file],
-    text: message,
-    title: filename.replace(".pdf", ""),
-  });
-  return true;
 }
 
 export function printReceipt(element: HTMLElement): void {
