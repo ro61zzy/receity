@@ -1,17 +1,27 @@
 "use client";
 
 import { deductStockForReceipt } from "@/lib/inventory-deduct";
+import { useCustomerStore } from "@/lib/store/customer-store";
 import { useInventoryStore } from "@/lib/store/inventory-store";
 import { useReceiptStore } from "@/lib/store/receipt-store";
 import { toast } from "sonner";
 
-/** Save receipt and deduct linked inventory stock (once per receipt number) */
+/** Save receipt, sync customer, and deduct linked inventory stock */
 export function finalizeReceipt(): void {
   const receipt = useReceiptStore.getState().receipt;
   const saveCurrentReceipt = useReceiptStore.getState().saveCurrentReceipt;
   const inventory = useInventoryStore.getState();
 
   saveCurrentReceipt();
+
+  const savedReceipts = useReceiptStore.getState().savedReceipts;
+  const saved = savedReceipts.find(
+    (entry) => entry.receiptNumber === receipt.receiptNumber,
+  );
+
+  if (saved) {
+    useCustomerStore.getState().syncFromReceipt(saved, savedReceipts);
+  }
 
   const alreadyDeducted = inventory.isReceiptDeducted(receipt.receiptNumber);
   const { products, result } = deductStockForReceipt(

@@ -5,6 +5,7 @@ import { persist } from "zustand/middleware";
 import { formatReceiptNumber, getNextReceiptNumber, getReceiptYear } from "@/lib/receipt-number";
 import { calculateTotals } from "@/lib/receipt-calculations";
 import { stripLegacyBusinessDefaults } from "@/lib/business-migration";
+import { useCustomerStore } from "@/lib/store/customer-store";
 import { STORAGE_KEYS } from "@/lib/constants";
 import type {
   BusinessInfo,
@@ -49,8 +50,6 @@ function normalizeSavedReceipt(receipt: Partial<SavedReceipt>): SavedReceipt {
     customerName: receipt.customerName ?? "",
     customerPhone: receipt.customerPhone ?? "",
     paymentMethod: receipt.paymentMethod ?? "M-Pesa",
-    servedBy: receipt.servedBy ?? "",
-    notes: receipt.notes ?? "",
     items: receipt.items ?? [],
     id: receipt.id ?? crypto.randomUUID(),
     createdAt: receipt.createdAt ?? new Date().toISOString(),
@@ -69,8 +68,6 @@ function createInitialReceipt(counter: number, year?: number): ReceiptDetails {
     customerName: "",
     customerPhone: "",
     paymentMethod: "M-Pesa",
-    servedBy: "",
-    notes: "",
     items: [createEmptyItem()],
   };
 }
@@ -208,10 +205,13 @@ export const useReceiptStore = create<ReceiptStore>()(
         set({ savedReceipts: [saved, ...savedReceipts] });
       },
 
-      deleteSavedReceipt: (id) =>
-        set((state) => ({
-          savedReceipts: state.savedReceipts.filter((saved) => saved.id !== id),
-        })),
+      deleteSavedReceipt: (id) => {
+        const savedReceipts = get().savedReceipts.filter(
+          (saved) => saved.id !== id,
+        );
+        set({ savedReceipts });
+        useCustomerStore.getState().removeReceipt(id, savedReceipts);
+      },
 
       duplicateSavedReceipt: (id) => {
         const saved = get().savedReceipts.find((receipt) => receipt.id === id);
@@ -225,8 +225,6 @@ export const useReceiptStore = create<ReceiptStore>()(
             customerName: saved.customerName,
             customerPhone: saved.customerPhone,
             paymentMethod: saved.paymentMethod,
-            servedBy: saved.servedBy,
-            notes: saved.notes,
             items: saved.items.map((item) => ({
               ...item,
               id: crypto.randomUUID(),

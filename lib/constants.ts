@@ -3,6 +3,7 @@ export const STORAGE_KEYS = {
   receiptCounter: "receity-receipt-counter",
   savedReceipts: "receity-saved-receipts",
   inventory: "receity-inventory",
+  customers: "receity-customers",
   setupNotice: "receity-setup-notice",
 } as const;
 

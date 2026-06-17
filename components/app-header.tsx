@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { History, Package, ReceiptText } from "lucide-react";
+import { History, Package, ReceiptText, Users } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/", label: "Receipts", icon: ReceiptText },
   { href: "/history", label: "History", icon: History },
+  { href: "/customers", label: "Customers", icon: Users },
   { href: "/inventory", label: "Inventory", icon: Package },
 ] as const;
 
@@ -51,7 +52,7 @@ export function AppHeader() {
       </header>
 
       <nav className="fixed inset-x-0 bottom-0 z-50 border-t bg-background/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom,0px)] md:hidden">
-        <div className="mx-auto grid max-w-7xl grid-cols-3">
+        <div className="mx-auto grid max-w-7xl grid-cols-4">
           {NAV.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}

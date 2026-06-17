@@ -354,17 +354,6 @@ export function ReceiptPreview({
         <FieldRow label="Date" value={formatDisplayDate(receipt.date)} />
         <FieldRow label="Phone" value={receipt.customerPhone} />
         <FieldRow label="Issued" value={formatDisplayDate(receipt.date)} />
-        <div style={{ gridColumn: "1 / -1" }}>
-          <FieldRow label="Payment Method" value={receipt.paymentMethod} />
-        </div>
-        {receipt.servedBy && (
-          <FieldRow label="Served By" value={receipt.servedBy} />
-        )}
-        {receipt.notes && (
-          <div style={{ gridColumn: "1 / -1" }}>
-            <FieldRow label="Notes" value={receipt.notes} />
-          </div>
-        )}
       </div>
 
       {/* Star divider */}
@@ -562,10 +551,21 @@ export function ReceiptPreview({
       <div
         style={{
           display: "flex",
-          justifyContent: "flex-end",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          gap: 16,
           marginBottom: 16,
         }}
       >
+        <div style={{ fontSize: 9, color: RECEIPT_THEME.inkMuted, lineHeight: 1.4 }}>
+          <div style={{ fontWeight: 700, color: RECEIPT_THEME.blue, marginBottom: 2 }}>
+            Payment
+          </div>
+          <div style={{ fontSize: 10, color: RECEIPT_THEME.ink }}>
+            {receipt.paymentMethod}
+          </div>
+        </div>
+
         <div style={{ width: 160, fontSize: 10 }}>
           <div
             style={{

@@ -12,9 +12,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { CustomerCombobox } from "@/components/customer-combobox";
 import { useReceiptStore } from "@/lib/store/receipt-store";
-import { PAYMENT_METHODS, type PaymentMethod } from "@/types/receipt";
 
 export function CustomerInfoCard() {
   const receipt = useReceiptStore((state) => state.receipt);
@@ -67,75 +66,15 @@ export function CustomerInfoCard() {
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="customer-name">Customer Name</Label>
-            <Input
-              id="customer-name"
-              placeholder="John Doe"
-              value={receipt.customerName}
-              onChange={(e) => setReceipt({ customerName: e.target.value })}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="customer-phone">Customer Phone</Label>
-            <Input
-              id="customer-phone"
-              placeholder="+254 7XX XXX XXX"
-              value={receipt.customerPhone}
-              onChange={(e) => setReceipt({ customerPhone: e.target.value })}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="payment-method">Payment Method</Label>
-          <select
-            id="payment-method"
-            value={receipt.paymentMethod}
-            onChange={(e) =>
-              setReceipt({ paymentMethod: e.target.value as PaymentMethod })
-            }
-            className={cn(
-              "border-input bg-background h-8 w-full rounded-lg border px-2.5 text-sm",
-              "focus-visible:border-ring focus-visible:ring-ring/50 outline-none focus-visible:ring-3",
-            )}
-          >
-            {PAYMENT_METHODS.map((method) => (
-              <option key={method} value={method}>
-                {method}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="served-by">Served By</Label>
-            <Input
-              id="served-by"
-              placeholder="Staff name"
-              value={receipt.servedBy}
-              onChange={(e) => setReceipt({ servedBy: e.target.value })}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="receipt-notes">Notes</Label>
-          <textarea
-            id="receipt-notes"
-            placeholder="Optional notes for this receipt"
-            value={receipt.notes}
-            onChange={(e) => setReceipt({ notes: e.target.value })}
-            rows={2}
-            className={cn(
-              "border-input bg-background w-full rounded-lg border px-2.5 py-2 text-sm",
-              "focus-visible:border-ring focus-visible:ring-ring/50 outline-none focus-visible:ring-3",
-              "resize-none",
-            )}
-          />
-        </div>
+        <CustomerCombobox
+          name={receipt.customerName}
+          phone={receipt.customerPhone}
+          onSelect={({ name, phone }) =>
+            setReceipt({ customerName: name, customerPhone: phone })
+          }
+          onNameChange={(customerName) => setReceipt({ customerName })}
+          onPhoneChange={(customerPhone) => setReceipt({ customerPhone })}
+        />
       </CardContent>
     </Card>
   );
