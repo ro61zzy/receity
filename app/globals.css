@@ -138,4 +138,15 @@
       transparent 55%
     );
   }
+
+  .receity-card {
+    border-color: var(--border);
+    background-color: var(--card);
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--foreground) 4%, transparent);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .receity-card:hover {
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--foreground) 6%, transparent);
+  }
 }

@@ -43,7 +43,7 @@ export function ReceiptActions({ compact = false }: ReceiptActionsProps) {
       );
       await downloadReceiptPdf(element, filename);
       finalizeReceipt();
-      toast.success("PDF downloaded — stock updated");
+      toast.success("✓ PDF downloaded successfully");
     } catch (error) {
       console.error("PDF generation failed:", error);
       toast.error(
@@ -64,7 +64,7 @@ export function ReceiptActions({ compact = false }: ReceiptActionsProps) {
     try {
       printReceipt(element);
       finalizeReceipt();
-      toast.success("Print dialog opened — stock updated");
+      toast.success("✓ Receipt saved — print dialog opened");
     } catch (error) {
       console.error("Print failed:", error);
       toast.error(
@@ -101,9 +101,7 @@ export function ReceiptActions({ compact = false }: ReceiptActionsProps) {
       await new Promise((resolve) => setTimeout(resolve, 400));
       openWhatsAppReceipt(phone, receipt, business, whatsAppWindow);
       finalizeReceipt();
-      toast.success(
-        "WhatsApp opened — attach the downloaded PDF, then send",
-      );
+      toast.success("✓ Receipt saved — WhatsApp opened");
     } catch (error) {
       whatsAppWindow?.close();
       console.error("WhatsApp send failed:", error);
@@ -118,7 +116,7 @@ export function ReceiptActions({ compact = false }: ReceiptActionsProps) {
   const handleNewReceipt = () => {
     finalizeReceipt();
     newReceipt();
-    toast.success("New receipt created");
+    toast.success("✓ New receipt ready");
   };
 
   if (compact) {
@@ -127,7 +125,7 @@ export function ReceiptActions({ compact = false }: ReceiptActionsProps) {
         <Button
           onClick={handleWhatsApp}
           disabled={isExporting}
-          className="h-11 border-green-600/30 bg-green-600 text-white hover:bg-green-700"
+          className="h-11 bg-success text-success-foreground hover:bg-success/90"
         >
           <MessageCircle className="mr-2 h-4 w-4" />
           {isExporting ? "..." : "WhatsApp"}
@@ -158,7 +156,7 @@ export function ReceiptActions({ compact = false }: ReceiptActionsProps) {
   }
 
   return (
-    <Card className="shadow-sm">
+    <Card className="receity-card">
       <CardHeader>
         <CardTitle className="text-base">Actions</CardTitle>
         <CardDescription>
@@ -189,7 +187,7 @@ export function ReceiptActions({ compact = false }: ReceiptActionsProps) {
             variant="outline"
             onClick={handleWhatsApp}
             disabled={isExporting}
-            className="h-11 flex-1 border-green-600/30 text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-950/30"
+            className="h-11 flex-1 bg-success text-success-foreground hover:bg-success/90"
           >
             <MessageCircle className="mr-2 h-4 w-4" />
             {isExporting ? "Preparing..." : "Send via WhatsApp"}

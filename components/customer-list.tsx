@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Search, Users } from "lucide-react";
+import { Search } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CustomerDetailSheet } from "@/components/customer-detail-sheet";
+import { EmptyState } from "@/components/empty-state";
 import { formatCurrency } from "@/lib/currency";
 import {
   filterCustomers,
@@ -52,7 +53,7 @@ export function CustomerList() {
 
   return (
     <>
-      <Card className="shadow-sm">
+      <Card className="receity-card">
         <CardHeader className="gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <CardTitle className="text-base">All Customers</CardTitle>
@@ -75,21 +76,19 @@ export function CustomerList() {
 
         <CardContent>
           {filteredCustomers.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <Users className="h-10 w-10 text-muted-foreground" />
-              <div>
-                <p className="font-medium">
-                  {customers.length === 0
-                    ? "No customers yet"
-                    : "No matching customers"}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {customers.length === 0
-                    ? "Customers are added automatically when you complete receipts."
-                    : "Try a different search term."}
-                </p>
-              </div>
-            </div>
+            customers.length === 0 ? (
+              <EmptyState
+                emoji="👥"
+                title="No customers yet"
+                description="Customers will appear automatically as you create receipts."
+              />
+            ) : (
+              <EmptyState
+                emoji="🔍"
+                title="No matching customers"
+                description="Try a different name or phone number."
+              />
+            )
           ) : (
             <>
               <div className="hidden md:block">
@@ -133,7 +132,7 @@ export function CustomerList() {
                 {filteredCustomers.map((customer) => (
                   <Card
                     key={customer.id}
-                    className="cursor-pointer shadow-sm transition-colors hover:bg-muted/30"
+                    className="receity-card cursor-pointer transition-colors hover:bg-muted/40"
                     onClick={() => setSelectedCustomer(customer)}
                   >
                     <CardContent className="space-y-2 pt-4">

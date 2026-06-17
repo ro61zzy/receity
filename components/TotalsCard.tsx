@@ -20,7 +20,7 @@ export function TotalsCard() {
   const { subtotal, total } = useReceiptTotals();
 
   return (
-    <Card className="shadow-sm">
+    <Card className="receity-card">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <Receipt className="h-4 w-4 text-muted-foreground" />

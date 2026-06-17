@@ -1,6 +1,6 @@
 "use client";
 
-import { Banknote, ReceiptText, Wallet } from "lucide-react";
+import { Banknote, TrendingUp, Wallet } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -24,50 +24,47 @@ export function ReceiptHistoryStats({ receipts }: ReceiptHistoryStatsProps) {
   );
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <Card className="shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <Wallet className="h-4 w-4" />
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Card className="receity-card sm:col-span-2 lg:col-span-1">
+        <CardHeader className="pb-1">
+          <CardTitle className="flex items-center gap-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <Wallet className="h-3.5 w-3.5" />
             Today&apos;s Revenue
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-semibold tracking-tight">
+        <CardContent className="space-y-1">
+          <p className="text-3xl font-semibold tracking-tight">
             {formatCurrency(stats.revenue)}
           </p>
-        </CardContent>
-      </Card>
-
-      <Card className="shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <ReceiptText className="h-4 w-4" />
-            Receipts Today
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-semibold tracking-tight">
-            {stats.receiptCount}
+          <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <TrendingUp className="h-3.5 w-3.5 text-success" />
+            {stats.receiptCount === 0
+              ? "No receipts yet today"
+              : `${stats.receiptCount} receipt${stats.receiptCount === 1 ? "" : "s"} today`}
           </p>
         </CardContent>
       </Card>
 
-      <Card className="shadow-sm sm:col-span-2 lg:col-span-1">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <Banknote className="h-4 w-4" />
-            Payment Breakdown
+      <Card className="receity-card sm:col-span-2 lg:col-span-1">
+        <CardHeader className="pb-1">
+          <CardTitle className="flex items-center gap-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            <Banknote className="h-3.5 w-3.5" />
+            Payment Methods
           </CardTitle>
         </CardHeader>
         <CardContent>
           {activePayments.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No receipts today yet</p>
+            <p className="text-sm text-muted-foreground">
+              Payments will appear here as you complete receipts.
+            </p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {activePayments.map((method) => (
-                <Badge key={method} variant="secondary" className="text-xs">
-                  {method}: {formatCurrency(stats.paymentBreakdown[method])}
+                <Badge key={method} variant="outline" className="rounded-full px-2.5">
+                  {method}
+                  <span className="ml-1 font-semibold text-foreground">
+                    {formatCurrency(stats.paymentBreakdown[method])}
+                  </span>
                 </Badge>
               ))}
             </div>

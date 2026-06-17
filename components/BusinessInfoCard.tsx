@@ -42,7 +42,7 @@ export function BusinessInfoCard() {
   };
 
   return (
-    <Card className="shadow-sm">
+    <Card className="receity-card">
       <CardHeader>
         <div className="flex items-center gap-2">
           <Building2 className="h-4 w-4 text-muted-foreground" />

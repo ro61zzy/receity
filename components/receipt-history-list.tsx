@@ -6,7 +6,6 @@ import {
   Copy,
   Download,
   Eye,
-  History,
   Search,
   Trash2,
 } from "lucide-react";
@@ -31,6 +30,7 @@ import {
 } from "@/components/ui/table";
 import { ReceiptPreview } from "@/components/ReceiptPreview";
 import { ReceiptViewSheet } from "@/components/receipt-view-sheet";
+import { EmptyState } from "@/components/empty-state";
 import { formatCurrency } from "@/lib/currency";
 import {
   filterReceipts,
@@ -84,7 +84,7 @@ export function ReceiptHistoryList() {
         receipt.receiptNumber,
       );
       await downloadReceiptPdf(element, filename);
-      toast.success("PDF downloaded");
+      toast.success("✓ PDF downloaded successfully");
     } catch (error) {
       console.error("PDF download failed:", error);
       toast.error(
@@ -98,7 +98,7 @@ export function ReceiptHistoryList() {
 
   const handleDuplicate = (receipt: SavedReceipt) => {
     duplicateSavedReceipt(receipt.id);
-    toast.success("Receipt loaded — edit and save as new");
+    toast.success("✓ Receipt loaded — ready to edit");
     router.push("/");
   };
 
@@ -117,7 +117,7 @@ export function ReceiptHistoryList() {
 
   return (
     <>
-      <Card className="shadow-sm">
+      <Card className="receity-card">
         <CardHeader className="gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <CardTitle className="text-base">All Receipts</CardTitle>
@@ -140,21 +140,19 @@ export function ReceiptHistoryList() {
 
         <CardContent className="space-y-4">
           {filteredReceipts.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <History className="h-10 w-10 text-muted-foreground" />
-              <div>
-                <p className="font-medium">
-                  {savedReceipts.length === 0
-                    ? "No receipts saved yet"
-                    : "No matching receipts"}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {savedReceipts.length === 0
-                    ? "Complete a receipt to see it here."
-                    : "Try a different search term."}
-                </p>
-              </div>
-            </div>
+            savedReceipts.length === 0 ? (
+              <EmptyState
+                emoji="🧾"
+                title="No receipts yet"
+                description="Generate your first receipt to start building your history."
+              />
+            ) : (
+              <EmptyState
+                emoji="🔍"
+                title="No matching receipts"
+                description="Try a different receipt number, name, or phone."
+              />
+            )
           ) : (
             <>
               <div className="hidden md:block">
@@ -244,7 +242,7 @@ export function ReceiptHistoryList() {
 
               <div className="space-y-3 md:hidden">
                 {filteredReceipts.map((receipt) => (
-                  <Card key={receipt.id} className="shadow-sm">
+                  <Card key={receipt.id} className="receity-card">
                     <CardContent className="space-y-3 pt-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>

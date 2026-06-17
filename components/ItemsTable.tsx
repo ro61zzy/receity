@@ -200,7 +200,7 @@ export function ItemsTable() {
   };
 
   return (
-    <Card className="shadow-sm">
+    <Card className="receity-card">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>

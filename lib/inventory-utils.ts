@@ -9,7 +9,26 @@ export function getReceiptItemName(product: Product): string {
 }
 
 export function isLowStock(product: Product): boolean {
-  return product.stock <= product.lowStockThreshold;
+  return product.stock > 0 && product.stock <= product.lowStockThreshold;
+}
+
+export type StockStatus = "good" | "low" | "out";
+
+export function getStockStatus(product: Product): StockStatus {
+  if (product.stock === 0) return "out";
+  if (product.stock <= product.lowStockThreshold) return "low";
+  return "good";
+}
+
+export function getStockStatusLabel(status: StockStatus): string {
+  switch (status) {
+    case "good":
+      return "Good";
+    case "low":
+      return "Low Stock";
+    case "out":
+      return "Out of Stock";
+  }
 }
 
 export function groupProductsBySize(
