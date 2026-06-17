@@ -108,6 +108,34 @@ export function CustomerInfoCard() {
             ))}
           </select>
         </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="served-by">Served By</Label>
+            <Input
+              id="served-by"
+              placeholder="Staff name"
+              value={receipt.servedBy}
+              onChange={(e) => setReceipt({ servedBy: e.target.value })}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="receipt-notes">Notes</Label>
+          <textarea
+            id="receipt-notes"
+            placeholder="Optional notes for this receipt"
+            value={receipt.notes}
+            onChange={(e) => setReceipt({ notes: e.target.value })}
+            rows={2}
+            className={cn(
+              "border-input bg-background w-full rounded-lg border px-2.5 py-2 text-sm",
+              "focus-visible:border-ring focus-visible:ring-ring/50 outline-none focus-visible:ring-3",
+              "resize-none",
+            )}
+          />
+        </div>
       </CardContent>
     </Card>
   );

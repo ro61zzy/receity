@@ -1,10 +1,11 @@
 "use client";
 
 import { formatCurrency } from "@/lib/currency";
-import { calculateItemTotal } from "@/lib/receipt-calculations";
+import { calculateItemTotal, calculateTotals } from "@/lib/receipt-calculations";
 import { formatSocialHandle } from "@/lib/receipt-print-styles";
 import { RECEIPT_THEME } from "@/lib/receipt-theme";
 import { useReceiptStore, useReceiptTotals } from "@/lib/store/receipt-store";
+import type { BusinessInfo, ReceiptDetails, ReceiptTotals } from "@/types/receipt";
 import {
   InstagramIcon,
   LocationIcon,
@@ -159,10 +160,30 @@ function FieldRow({
   );
 }
 
-export function ReceiptPreview() {
-  const business = useReceiptStore((state) => state.business);
-  const receipt = useReceiptStore((state) => state.receipt);
-  const { subtotal, total } = useReceiptTotals();
+export type ReceiptPreviewProps = {
+  receipt?: ReceiptDetails;
+  business?: BusinessInfo;
+  totals?: ReceiptTotals;
+  previewId?: string;
+};
+
+export function ReceiptPreview({
+  receipt: receiptProp,
+  business: businessProp,
+  totals: totalsProp,
+  previewId = "receipt-preview",
+}: ReceiptPreviewProps = {}) {
+  const storeBusiness = useReceiptStore((state) => state.business);
+  const storeReceipt = useReceiptStore((state) => state.receipt);
+  const storeTotals = useReceiptTotals();
+
+  const business = businessProp ?? storeBusiness;
+  const receipt = receiptProp ?? storeReceipt;
+  const { subtotal, total } =
+    totalsProp ??
+    (receiptProp
+      ? calculateTotals(receiptProp.items)
+      : storeTotals);
 
   const validItems = receipt.items.filter((item) => item.name.trim());
   const emptyRowCount =
@@ -191,7 +212,7 @@ export function ReceiptPreview() {
   };
 
   return (
-    <div id="receipt-preview" style={paperStyle}>
+    <div id={previewId} style={paperStyle}>
       {/* Perforated top edge */}
       <div
         style={{
@@ -336,6 +357,14 @@ export function ReceiptPreview() {
         <div style={{ gridColumn: "1 / -1" }}>
           <FieldRow label="Payment Method" value={receipt.paymentMethod} />
         </div>
+        {receipt.servedBy && (
+          <FieldRow label="Served By" value={receipt.servedBy} />
+        )}
+        {receipt.notes && (
+          <div style={{ gridColumn: "1 / -1" }}>
+            <FieldRow label="Notes" value={receipt.notes} />
+          </div>
+        )}
       </div>
 
       {/* Star divider */}

@@ -32,6 +32,8 @@ export interface ReceiptDetails {
   customerName: string;
   customerPhone: string;
   paymentMethod: PaymentMethod;
+  servedBy: string;
+  notes: string;
   items: ReceiptItem[];
 }
 

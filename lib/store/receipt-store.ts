@@ -41,6 +41,25 @@ function normalizeBusiness(
   };
 }
 
+function normalizeSavedReceipt(receipt: Partial<SavedReceipt>): SavedReceipt {
+  const { subtotal, total } = calculateTotals(receipt.items ?? []);
+  return {
+    receiptNumber: receipt.receiptNumber ?? "",
+    date: receipt.date ?? getTodayDate(),
+    customerName: receipt.customerName ?? "",
+    customerPhone: receipt.customerPhone ?? "",
+    paymentMethod: receipt.paymentMethod ?? "M-Pesa",
+    servedBy: receipt.servedBy ?? "",
+    notes: receipt.notes ?? "",
+    items: receipt.items ?? [],
+    id: receipt.id ?? crypto.randomUUID(),
+    createdAt: receipt.createdAt ?? new Date().toISOString(),
+    subtotal: receipt.subtotal ?? subtotal,
+    total: receipt.total ?? total,
+    stockDeducted: receipt.stockDeducted,
+  };
+}
+
 function createInitialReceipt(counter: number, year?: number): ReceiptDetails {
   const receiptYear = year ?? getReceiptYear();
   const { number } = getNextReceiptNumber(counter, receiptYear);
@@ -50,6 +69,8 @@ function createInitialReceipt(counter: number, year?: number): ReceiptDetails {
     customerName: "",
     customerPhone: "",
     paymentMethod: "M-Pesa",
+    servedBy: "",
+    notes: "",
     items: [createEmptyItem()],
   };
 }
@@ -79,6 +100,8 @@ interface ReceiptStore {
   removeItem: (id: string) => void;
   newReceipt: () => void;
   saveCurrentReceipt: () => void;
+  deleteSavedReceipt: (id: string) => void;
+  duplicateSavedReceipt: (id: string) => void;
   incrementCounter: () => void;
 }
 
@@ -158,6 +181,22 @@ export const useReceiptStore = create<ReceiptStore>()(
 
         if (!hasContent) return;
 
+        const existingIndex = savedReceipts.findIndex(
+          (saved) => saved.receiptNumber === receipt.receiptNumber,
+        );
+
+        if (existingIndex >= 0) {
+          const updated: SavedReceipt = {
+            ...savedReceipts[existingIndex],
+            ...receipt,
+            subtotal,
+            total,
+          };
+          const rest = savedReceipts.filter((_, index) => index !== existingIndex);
+          set({ savedReceipts: [updated, ...rest] });
+          return;
+        }
+
         const saved: SavedReceipt = {
           ...receipt,
           id: crypto.randomUUID(),
@@ -168,19 +207,61 @@ export const useReceiptStore = create<ReceiptStore>()(
 
         set({ savedReceipts: [saved, ...savedReceipts] });
       },
+
+      deleteSavedReceipt: (id) =>
+        set((state) => ({
+          savedReceipts: state.savedReceipts.filter((saved) => saved.id !== id),
+        })),
+
+      duplicateSavedReceipt: (id) => {
+        const saved = get().savedReceipts.find((receipt) => receipt.id === id);
+        if (!saved) return;
+
+        const { receipt } = get();
+        set({
+          receipt: {
+            ...receipt,
+            date: getTodayDate(),
+            customerName: saved.customerName,
+            customerPhone: saved.customerPhone,
+            paymentMethod: saved.paymentMethod,
+            servedBy: saved.servedBy,
+            notes: saved.notes,
+            items: saved.items.map((item) => ({
+              ...item,
+              id: crypto.randomUUID(),
+            })),
+          },
+        });
+      },
     }),
     {
       name: STORAGE_KEYS.business,
-      version: 2,
+      version: 3,
       migrate: (persistedState, version) => {
+        let state = persistedState as Partial<ReceiptStore>;
+
         if (version < 2) {
-          const state = persistedState as Partial<ReceiptStore>;
-          return {
+          state = {
             ...state,
-            business: stripLegacyBusinessDefaults(state.business),
+            business: normalizeBusiness(
+              stripLegacyBusinessDefaults(
+                state.business as Partial<BusinessInfo> | undefined,
+              ),
+            ),
           };
         }
-        return persistedState;
+
+        if (version < 3) {
+          state = {
+            ...state,
+            savedReceipts: (state.savedReceipts ?? []).map((saved) =>
+              normalizeSavedReceipt(saved as Partial<SavedReceipt>),
+            ),
+          };
+        }
+
+        return state as ReceiptStore;
       },
       partialize: (state) => ({
         business: state.business,
@@ -204,7 +285,9 @@ export const useReceiptStore = create<ReceiptStore>()(
           business: normalizeBusiness(persistedState?.business),
           receiptCounter: counter,
           receiptCounterYear: year,
-          savedReceipts: persistedState?.savedReceipts ?? [],
+          savedReceipts: (persistedState?.savedReceipts ?? []).map((saved) =>
+            normalizeSavedReceipt(saved as Partial<SavedReceipt>),
+          ),
           receipt: {
             ...receipt,
             paymentMethod:

@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ReceiptPreview } from "@/components/ReceiptPreview";
 import { RECEIPT_WIDTH_PX } from "@/lib/pdf";
 
-export function ReceiptPreviewFrame() {
+type ReceiptPreviewFrameProps = {
+  children?: ReactNode;
+};
+
+export function ReceiptPreviewFrame({ children }: ReceiptPreviewFrameProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -26,7 +30,7 @@ export function ReceiptPreviewFrame() {
     const observer = new ResizeObserver(updateScale);
     observer.observe(container);
     return () => observer.disconnect();
-  }, []);
+  }, [children]);
 
   return (
     <div ref={containerRef} className="w-full">
@@ -45,7 +49,7 @@ export function ReceiptPreviewFrame() {
             width: RECEIPT_WIDTH_PX,
           }}
         >
-          <ReceiptPreview />
+          {children ?? <ReceiptPreview />}
         </div>
       </div>
     </div>
