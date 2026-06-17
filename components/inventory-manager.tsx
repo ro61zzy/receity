@@ -6,7 +6,7 @@ import { SetupNotice } from "@/components/setup-notice";
 
 export function InventoryManager() {
   return (
-    <div className="min-h-screen bg-muted/30 pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
+    <div className="receity-page-bg min-h-screen pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
       <AppHeader />
       <SetupNotice />
 

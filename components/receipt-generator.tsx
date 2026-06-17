@@ -19,7 +19,7 @@ export function ReceiptGenerator() {
   const [mobileView, setMobileView] = useState<MobileView>("edit");
 
   return (
-    <div className="min-h-screen bg-muted/30 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
+    <div className="receity-page-bg min-h-screen pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
       <AppHeader />
       <SetupNotice />
 
